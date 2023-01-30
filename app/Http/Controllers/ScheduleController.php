@@ -51,7 +51,7 @@ class ScheduleController extends Controller
         $schedule = Schedule::create([
             'user_id'    => $userId,
             'plan_id'    => $plan_id,
-            'date'       => $date,
+            'date'       => date("Y-m-d",$date),
             'type'       => $type
         ]);
         return $schedule->id;
