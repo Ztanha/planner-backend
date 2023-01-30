@@ -51,7 +51,7 @@ class ScheduleController extends Controller
         $schedule = Schedule::create([
             'user_id'    => $userId,
             'plan_id'    => $plan_id,
-            'date'       => date("Y-m-d",$date),
+            'date'       => strtotime(date("Y-m-d",$date)),
             'type'       => $type
         ]);
         return $schedule->id;
@@ -98,6 +98,8 @@ class ScheduleController extends Controller
     function get(Request $request) {
         $user = XaraHelper::getAuthenticatedUser($request->sessionId);
         $temp=[];
+        $date = strtotime(date("Y-m-d",$request->date));
+        $date2 = strtotime(date("Y-m-d",$request->date2));
         if(empty($user)){
             return XaraHelper::makeUnauthenticatedError();
         }
@@ -116,13 +118,13 @@ class ScheduleController extends Controller
 
         if(!empty($request->date2)) {
             $schedules = $user->schedules()
-                ->whereBetween('date',[$request->date2,$request->date])
+                ->whereBetween('date',[$date2,$date])
                 ->get();
         }else{
 
             $this->syncAutoSchedules($user,$request->date);
 
-            $schedules = $user->schedules()->where('date',$request->date)->get();
+            $schedules = $user->schedules()->where('date',$date)->get();
         }
 
         foreach($schedules as $schedule) {
